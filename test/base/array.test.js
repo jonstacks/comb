@@ -3,6 +3,25 @@ var it = require('it'),
     assert = require('assert'),
     comb = require("../../index");
 
+var majorNodeVersion = parseInt(process.versions.node.split(".")[0]);
+
+it.describe("isArray", function(it) {
+    it.should("return false on non array objects", function() {
+        var obj = {name: "myObject"};
+        assert.isFalse(comb.isArray(obj));
+    });
+
+    if (majorNodeVersion >= 6) {
+        it.should("work on proxies", function() {
+            var prox = new Proxy([1, 2, 3, 4], {});
+            assert.isTrue(comb.isArray(prox));
+
+            prox = new Proxy({name: "myObject"}, {});
+            assert.isFalse(comb.isArray(prox));
+        });
+    }
+});
+
 it.describe("array", function (it) {
 
     var array = comb.array;
@@ -726,6 +745,7 @@ it.describe("array", function (it) {
         assert.deepEqual(array.min(arr6, "a"), {a: minDate});
 
     });
+
     it.should("find the max value of an array", function () {
         var arr1 = comb([3, -3, -2, -1, 1, 2]),
             arr2 = comb(["b", "c", "a"]),
@@ -934,7 +954,6 @@ it.describe("array", function (it) {
         assert.deepEqual(array.difference(["a", "b", 3], [3]), ["a", "b"]);
         assert.deepEqual(array.difference([a, b, c], [b, c]), [a]);
     });
-
 
     it.should("average an array", function () {
         assert.equal(comb.array.avg(), 0);
